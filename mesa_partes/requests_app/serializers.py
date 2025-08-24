@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Request, RequestFile, RequestStatus
 from files.serializers import FileSerializer
 from users.serializers import AdminUserSerializer
+from files.models import File
+from mesa_partes.utils.response import custom_response
 
 class RequestFileSerializer(serializers.ModelSerializer):
     file = FileSerializer(read_only=True)
@@ -28,3 +30,34 @@ class RequestSerializer(serializers.ModelSerializer):
             "concept", "status", "created_at", "files", "status_history"
         ]
         read_only_fields = ["id", "created_at"]
+
+class RequestCreateSerializer(serializers.ModelSerializer):
+    uploaded_files = serializers.ListField(
+        child=serializers.FileField(),
+        write_only=True,
+        required=True
+    )
+
+    class Meta:
+        model = Request
+        fields = ["full_name", "document", "email", "phone", "concept", "uploaded_files"]
+
+    def create(self, validated_data):
+        files_data = validated_data.pop("uploaded_files", [])
+
+        last_request = Request.objects.order_by("-id").first()
+        next_id = (last_request.id + 1) if last_request else 1
+        validated_data["code"] = f"TRM-{next_id:04d}"
+
+        request_instance = Request.objects.create(**validated_data)
+
+        for f in files_data:
+            file_instance = File.objects.create(
+                original_name=f.name,
+                file_path=f,
+                file_type=f.name.split(".")[-1].lower(),
+                size=f.size
+            )
+            RequestFile.objects.create(request=request_instance, file=file_instance)
+
+        return request_instance
