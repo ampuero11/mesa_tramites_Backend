@@ -4,6 +4,7 @@ from files.serializers import FileSerializer
 from users.serializers import AdminUserSerializer
 from files.models import File
 from mesa_partes.utils.response import custom_response
+from django.utils import timezone
 
 class RequestFileSerializer(serializers.ModelSerializer):
     file = FileSerializer(read_only=True)
@@ -42,12 +43,15 @@ class RequestCreateSerializer(serializers.ModelSerializer):
         model = Request
         fields = ["full_name", "document", "email", "phone", "concept", "uploaded_files"]
 
+    from django.utils import timezone
+
     def create(self, validated_data):
         files_data = validated_data.pop("uploaded_files", [])
 
-        last_request = Request.objects.order_by("-id").first()
-        next_id = (last_request.id + 1) if last_request else 1
-        validated_data["code"] = f"TRM-{next_id:04d}"
+        last_request = Request.objects.order_by("-created_at").first()
+        next_number = (last_request.code_number + 1) if last_request else 1
+
+        validated_data["code"] = f"TRM-{timezone.now().year}-{next_number:04d}"
 
         request_instance = Request.objects.create(**validated_data)
 

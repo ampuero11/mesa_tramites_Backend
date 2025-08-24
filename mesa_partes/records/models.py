@@ -1,8 +1,10 @@
 from django.db import models
 from requests_app.models import Request
 from users.models import AdminUser
+import uuid
 
 class Record(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
     date = models.DateField()
     description = models.TextField(blank=True, null=True)
     created_by = models.ForeignKey(AdminUser, on_delete=models.SET_NULL, null=True)
@@ -13,6 +15,7 @@ class Record(models.Model):
 
 
 class RecordDetail(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
     record = models.ForeignKey(Record, on_delete=models.CASCADE, related_name="details")
     request = models.ForeignKey(Request, on_delete=models.CASCADE)
     observation = models.TextField(blank=True, null=True)

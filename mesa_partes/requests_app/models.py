@@ -1,8 +1,10 @@
 from django.db import models
 from files.models import File
 from users.models import AdminUser
+import uuid
 
 class Request(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
     STATUS_CHOICES = [
         ("received", "Recibido"),
         ("in_process", "En Proceso"),
@@ -24,6 +26,7 @@ class Request(models.Model):
 
 
 class RequestFile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name="files")
     file = models.ForeignKey(File, on_delete=models.CASCADE)
 
@@ -32,6 +35,7 @@ class RequestFile(models.Model):
 
 
 class RequestStatus(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name="status_history")
     status = models.CharField(max_length=50)
     changed_at = models.DateTimeField(auto_now_add=True)

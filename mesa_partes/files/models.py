@@ -1,6 +1,8 @@
 from django.db import models
+import uuid
 
 class File(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
     original_name = models.CharField(max_length=255)
     file_path = models.FileField(upload_to="uploads/")
     file_type = models.CharField(max_length=50, default='pdf')

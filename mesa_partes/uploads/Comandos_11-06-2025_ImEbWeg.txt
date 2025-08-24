@@ -1,0 +1,167 @@
+Comandos: 11-06-2025
+
+Nota: agrupar por productos: product1, product2 y product3 y luego sumamos, y cuantos se hizo por tarjeta, y cuanto ha sido el promedio del precio del producto, luego se puede calcular por ciudad o por estado ...
+
+
+
+nos logueamos ...
+su - hdoop
+
+contraseña: hdoop
+
+*obtenemos el archivo, y descargamos con:
+wget http://----
+
+
+*visualizamos: ll
+
+*editamos el encabezado:
+vim SalesJan2009.csv
+
+salir de vim :q!
+salir y guardar de vim    :wq
+
+
+iniciamos el servicio del hdoop
+start-all.sh
+
+*vemos los estados iniciados:
+jps
+
+*creamos en la carpeta:
+hadoop fs -mkdir /pig_data
+
+*lo subimos al hdoop
+hadoop fs -put SalesJan2009.csv /pig_data/
+
+vemos si se subió
+hadoop fs -ls /pig_data/
+
+*entramos al apache pig
+pig -x mapreduce
+
+
+*vamos a leer la data
+ventas = LOAD 'hdfs://localhost:9000/pig_data/SalesJan2009.csv' USING PigStorage(',') as (fechatran:chararray, producto:chararray, precio:int, metpago:chararray, nombrecli:chararray, ciudad:chararray, estado:chararray, pais:chararray); 
+
+para ver:
+sh cat SalesJan2009.csv
+
+*damos en dump, o ejecutamos:
+dump ventas;
+
+creamos una relación …
+ventas_por_producto = GROUP ventas BY producto;    y enter
+
+damos dump a la solución, vamos a calcular el total de ventas por producto
+total_ventas_por_producto = FOREACH ventas_por_producto GENERATE group AS producto, SUM(ventas.precio) AS total_ventas;
+
+ejecutamos:
+dump total_ventas_por_producto;
+
+
+
+Calcular, por tipo de 
+primero, agrupamos:
+
+ventas_por_tipo_pago = GROUP ventas BY metpago;     y enter
+
+*ahora, calculamos el monto total
+total_ventas_tipo_pago = FOREACH ventas_por_tipo_pago GENERATE group AS metpago, SUM(ventas.precio) AS total_ventas;    y enter
+
+dump total_ventas_tipo_pago;
+
+otra realacion:
+ventas_por_tipo_pago = GROUP ventas BY metpago;  
+
+precio_promedio_por_tipo_pago = FOREACH ventas_por_tipo_pago GENERATE group AS metpago, AVG( ventas.precio) AS precio_promedio;   enter
+
+dump precio_promedio_por_tipo_pago;
+
+
+
+
+Actividad en la clase ...
+Total de ventas por ciudad 
+agrupado_ciudad = GROUP ventas BY ciudad;    enter
+
+ventas_por_ciudad = FOREACH agrupado_ciudad GENERATE group as ciudad, SUM( ventas.precio) AS ventas_por_cada_ciudad;    enter
+
+dump ventas_por_ciudad;  enter
+
+
+-------
+accedemos como superusuario:
+sudo su
+clave: hdoop
+
+cd
+
+*creamos un grupo: 
+groupadd HR
+
+cat /etc/group
+
+
+creamos un usuario:
+adduser jenny
+
+completamos con lo que nos piden
+y agregamos al grupo HR que creamos ...
+
+usermod -G HR jenny
+
+
+ahora, creamos otro usuario.
+adduser joe
+
+agregamos al grupo que creamos
+usermod -G HR joe
+
+verficamos ese uusario
+cat /etc/passwd
+
+
+abrimos otro terminal para iniciar con el usuario creado:
+para abrir otro terminal
+control Alt + F1
+
+nos loguemos con Jenny
+entramos a home
+cd /home
+
+para ver a su carpeta de Jenny
+cd ..
+
+pwd
+
+
+cd /home
+ls -l
+
+entramos a la carpeta de joe siendo jenny
+cd /joe
+cd ..
+control alt + f3
+nos logueamos con: 
+Rafael
+rafael2024
+
+iniciamos como super usuario:
+sudo su
+rafael2024
+
+cd /home
+chmod o-x joe   (vamos a quitar a otro el privilegio de ejecutar a la carpeta de joe)
+(nota: otros ya no pueden ejecutar en esta carpeta de joe)
+
+listamos 
+ls -l
+
+---------------
+volevemos a la carpeta de jenny
+control alt + f2
+
+entramos a la carpeta de joe
+cd /joe   --> mensaje: permiso denegado
+
