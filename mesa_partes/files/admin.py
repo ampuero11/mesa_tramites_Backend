@@ -3,8 +3,8 @@ from .models import File
 
 @admin.register(File)
 class FileAdmin(admin.ModelAdmin):
-    list_display = ("id", "file", "uploaded_at")
-    search_fields = ("file",)
-    list_filter = ("uploaded_at",)
+    list_display = ('id', 'original_name', 'file_path', 'file_type', 'size', 'uploaded_at')
+    search_fields = ('original_name', 'file_type')
+    list_filter = ('file_type', 'uploaded_at')
     verbose_name = "Archivo"
     verbose_name_plural = "Archivos"
