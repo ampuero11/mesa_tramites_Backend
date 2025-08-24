@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Acta de Trámites</title>
+    <style>
+      body {
+        font-family: "Times New Roman", serif;
+        margin: 50px;
+        line-height: 1.5;
+        color: #000;
+      }
+      h1 {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+      }
+      h2 {
+        text-align: center;
+        font-size: 16px;
+        font-weight: normal;
+        margin-top: 0;
+        margin-bottom: 30px;
+      }
+      p.intro {
+        text-align: justify;
+        margin-bottom: 20px;
+      }
+      ul {
+        list-style-type: decimal;
+        padding-left: 20px;
+      }
+      li {
+        margin-bottom: 15px;
+      }
+      .field-label {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 style="text-align: center">Acta de Trámites</h2>
+    <p style="text-align: center">{{ today }}</p>
+
+    <p class="intro">
+      El Sistema de Mensajería de Trámites de la
+      <span class="field-label">Municipalidad Distrital de Sabaino</span>
+      deja constancia que, por motivos administrativos del día {{ today }}, se
+      registraron los siguientes trámites:
+    </p>
+
+    <ul>
+      {% for t in tramites %}
+      <li>
+        <span class="field-label">Solicitante:</span> {{ t.full_name }}<br />
+        <span class="field-label">Tipo:</span> {{ t.concept }}<br />
+        <span class="field-label">Código:</span> {{ t.code }}<br />
+        <span class="field-label">Estado:</span> {{ t.status }}<br />
+        <span class="field-label">Correo:</span> {{ t.email }}<br />
+        <span class="field-label">Teléfono:</span> {{ t.phone }}<br />
+        <span class="field-label">Fecha de Registro:</span> {{ t.created_at }}
+      </li>
+      {% empty %}
+      <li>No se registraron trámites en esta fecha.</li>
+      {% endfor %}
+    </ul>
+
+    <p style="margin-top: 40px">
+      Se deja constancia para fines administrativos y de control interno.
+    </p>
+
+    <p style="text-align: right; margin-top: 60px">
+      ___________________________<br />
+      Firma del Responsable
+    </p>
+  </body>
+</html>

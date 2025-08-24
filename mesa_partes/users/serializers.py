@@ -7,8 +7,8 @@ from mesa_partes.utils.response import custom_response
 class AdminUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminUser
-        fields = ["id", "name", "email", "created_at"]
-        read_only_fields = ["id", "created_at"]
+        fields = ["id", "name", "email"]
+        read_only_fields = ["id"]
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = "email"

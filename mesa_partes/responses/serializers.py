@@ -9,3 +9,8 @@ class ResponseSerializer(serializers.ModelSerializer):
         model = Response
         fields = ["id", "request", "admin", "message", "sent_email", "created_at"]
         read_only_fields = ["id", "created_at"]
+
+class ResponseCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Response
+        fields = ["message"]

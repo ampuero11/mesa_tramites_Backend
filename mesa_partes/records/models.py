@@ -8,6 +8,7 @@ class Record(models.Model):
     date = models.DateField()
     description = models.TextField(blank=True, null=True)
     created_by = models.ForeignKey(AdminUser, on_delete=models.SET_NULL, null=True)
+    file = models.FileField(upload_to='records/', blank=True, null=True) 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
