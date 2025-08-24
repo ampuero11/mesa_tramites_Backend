@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'users',
     'files',
-    'requests',
+    'requests_app',
     'responses',
     'records',
 ]
@@ -89,6 +89,8 @@ DATABASES = {
         'PORT': '3306',
     }
 }
+
+AUTH_USER_MODEL = "users.AdminUser"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
