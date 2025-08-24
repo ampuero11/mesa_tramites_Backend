@@ -8,6 +8,7 @@ from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models import Count
 
 from .serializers import RequestCreateSerializer, RequestSerializer, RequestStatus
 from .models import Request
@@ -16,6 +17,7 @@ from responses.models import Response as ResponseModel
 from responses.serializers import ResponseCreateSerializer
 
 from mesa_partes.utils.response import custom_response
+import os
 
 class RequestViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser, FormParser]
@@ -151,3 +153,37 @@ class RequestAdminViewSet(viewsets.ReadOnlyModelViewSet):
             }),
             status=status.HTTP_201_CREATED
         )
+    
+    @action(detail=False, methods=['get'], url_path='codigos')
+    def buscar_por_codigo(self, request):
+        code = request.query_params.get('code')
+        if not code:
+            return Response({"detail": "Debe enviar un código"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instancia = Request.objects.get(code=code)
+        except Request.DoesNotExist:
+            return Response({"detail": "No se encontró trámite con ese código"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(instancia)
+        return Response(custom_response({
+            "type": "success",
+            "dto": serializer.data,
+            "listMessages": [f"Trámite {code} encontrado correctamente"]
+        }))
+    
+    @action(detail=False, methods=['get'], url_path='estadisticas')
+    def estadisticas(self, request):
+        total = Request.objects.count()
+        por_estado = Request.objects.values('status').annotate(cantidad=Count('id'))
+
+        data = {
+            "total_tramites": total,
+            "por_estado": list(por_estado)
+        }
+
+        return Response(custom_response({
+            "type": "success",
+            "dto": data,
+            "listMessages": ["Estadísticas de trámites obtenidas correctamente"]
+        }))

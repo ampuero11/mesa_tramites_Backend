@@ -60,10 +60,10 @@ class RecordViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'], url_path='listar')
     def list_records(self, request):
-        queryset = Record.objects.all().order_by('-date')
+        queryset = Record.objects.filter(file__isnull=False).order_by('-date')
         serializer = RecordSerializer(queryset, many=True)
         return Response(custom_response({
             "type": "success",
             "dto": serializer.data,
-            "listMessages": ["Listado de actas obtenido correctamente"]
+            "listMessages": ["Listado de actas generado correctamente"]
         }))

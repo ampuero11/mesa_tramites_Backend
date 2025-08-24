@@ -5,6 +5,8 @@ request_admin_list = RequestAdminViewSet.as_view({'get': 'list'})
 request_admin_detail = RequestAdminViewSet.as_view({'get': 'retrieve'})
 request_admin_send_response = RequestAdminViewSet.as_view({'post': 'send_response'})
 request_admin_change_status = RequestAdminViewSet.as_view({'patch': 'change_status'})
+request_admin_buscar_codigo = RequestAdminViewSet.as_view({'get': 'buscar_por_codigo'})
+request_admin_estadisticas = RequestAdminViewSet.as_view({'get': 'estadisticas'})
 
 urlpatterns = [
     path("tramites/", RequestAdminViewSet.as_view({'post': 'create'}), name="register_request"),
@@ -13,4 +15,6 @@ urlpatterns = [
     path("admin/tramites/<uuid:pk>/", request_admin_detail, name="admin_tramites_detail"),
     path("admin/tramites/<uuid:pk>/respuesta/", request_admin_send_response, name="admin_tramites_send_response"),
     path("admin/tramites/<uuid:pk>/estado/", request_admin_change_status, name="admin_tramites_change_status"),
+    path("admin/tramites/codigos/", request_admin_buscar_codigo, name="admin_tramites_buscar_codigo"),
+    path("admin/tramites/estadisticas/", request_admin_estadisticas, name="admin_tramites_estadisticas"),
 ]

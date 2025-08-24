@@ -16,5 +16,5 @@ class RecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Record
-        fields = ["id", "date", "description", "created_by", "created_at", "details"]
+        fields = ["id", "date", "description", "created_by", "created_at", "details", "file"]
         read_only_fields = ["id", "created_at"]
