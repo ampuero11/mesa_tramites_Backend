@@ -1,5 +1,5 @@
 from django.urls import path
-from .viewsets import RequestAdminViewSet
+from .viewsets import RequestAdminViewSet, RequestViewSet, PublicRequestDetailView
 
 request_admin_list = RequestAdminViewSet.as_view({'get': 'list'})
 request_admin_detail = RequestAdminViewSet.as_view({'get': 'retrieve'})
@@ -9,7 +9,8 @@ request_admin_buscar_codigo = RequestAdminViewSet.as_view({'get': 'buscar_por_co
 request_admin_estadisticas = RequestAdminViewSet.as_view({'get': 'estadisticas'})
 
 urlpatterns = [
-    path("tramites/", RequestAdminViewSet.as_view({'post': 'create'}), name="register_request"),
+    path("tramites/", RequestViewSet.as_view({'post': 'create'}), name="register_request"),
+    path("requests/public/", PublicRequestDetailView.as_view(), name="public-request-detail"),
 
     path("admin/tramites/", request_admin_list, name="admin_tramites_list"),
     path("admin/tramites/<uuid:pk>/", request_admin_detail, name="admin_tramites_detail"),

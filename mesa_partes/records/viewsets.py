@@ -52,18 +52,18 @@ class RecordViewSet(viewsets.ViewSet):
         record.save()
 
         pdf_url = request.build_absolute_uri(record.file.url)
-        return Response(custom_response({
-            "type": "success",
-            "dto": {"id": str(record.id), "file_url": pdf_url},
-            "listMessages": ["Acta generada correctamente"]
-        }))
+        return Response(custom_response(
+            type= "success",
+            dto= {"id": str(record.id), "file_url": pdf_url},
+            listMessages= ["Acta generada correctamente"]
+        ))
 
     @action(detail=False, methods=['get'], url_path='listar')
     def list_records(self, request):
         queryset = Record.objects.filter(file__isnull=False).order_by('-date')
         serializer = RecordSerializer(queryset, many=True)
-        return Response(custom_response({
-            "type": "success",
-            "dto": serializer.data,
-            "listMessages": ["Listado de actas generado correctamente"]
-        }))
+        return Response(custom_response(
+            type= "success",
+            dto= serializer.data,
+            listMessages= ["Listado de actas generado correctamente"]
+        ))

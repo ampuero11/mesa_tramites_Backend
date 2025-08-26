@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    "corsheaders",
     'users',
     'files',
     'requests_app',
@@ -48,9 +49,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -73,6 +75,8 @@ TEMPLATES = [
         },
     },
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 WSGI_APPLICATION = 'mesa_partes.wsgi.application'
 

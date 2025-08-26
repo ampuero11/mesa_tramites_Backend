@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -10,7 +11,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.db.models import Count
 
-from .serializers import RequestCreateSerializer, RequestSerializer, RequestStatus
+from .serializers import *
 from .models import Request
 
 from responses.models import Response as ResponseModel
@@ -19,6 +20,30 @@ from responses.serializers import ResponseCreateSerializer
 from mesa_partes.utils.response import custom_response
 import os
 
+class PublicRequestDetailView(APIView):
+    permission_classes = []
+
+    def get(self, request):
+        code = request.query_params.get("code")
+        if not code:
+            return Response(
+                custom_response(type="error", dto=None, listMessages=["Debes proporcionar un código"]),
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            instance = Request.objects.get(code=code)
+            serializer = PublicRequestSerializer(instance)
+            return Response(
+                custom_response(type="success", dto=serializer.data, listMessages=["Trámite encontrado"]),
+                status=status.HTTP_200_OK
+            )
+        except Request.DoesNotExist:
+            return Response(
+                custom_response(type="error", dto=None, listMessages=["Trámite no encontrado"]),
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
 class RequestViewSet(viewsets.ViewSet):
     parser_classes = [MultiPartParser, FormParser]
 
@@ -146,11 +171,11 @@ class RequestAdminViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
         return Response(
-            custom_response({
-                "type": "success",
-                "dto": {"id": str(response_instance.id), "message": response_instance.message},
-                "listMessages": ["Respuesta enviada y registrada correctamente"]
-            }),
+            custom_response(
+                type ="success",
+                dto = {"id": str(response_instance.id), "message": response_instance.message},
+                listMessages = ["Respuesta enviada y registrada correctamente"]
+            ),
             status=status.HTTP_201_CREATED
         )
     
@@ -166,11 +191,11 @@ class RequestAdminViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({"detail": "No se encontró trámite con ese código"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.get_serializer(instancia)
-        return Response(custom_response({
-            "type": "success",
-            "dto": serializer.data,
-            "listMessages": [f"Trámite {code} encontrado correctamente"]
-        }))
+        return Response(custom_response(
+            type= "success",
+            dto=serializer.data,
+            listMessages= [f"Trámite {code} encontrado correctamente"]
+        ))
     
     @action(detail=False, methods=['get'], url_path='estadisticas')
     def estadisticas(self, request):
@@ -182,8 +207,8 @@ class RequestAdminViewSet(viewsets.ReadOnlyModelViewSet):
             "por_estado": list(por_estado)
         }
 
-        return Response(custom_response({
-            "type": "success",
-            "dto": data,
-            "listMessages": ["Estadísticas de trámites obtenidas correctamente"]
-        }))
+        return Response(custom_response(
+            type="success",
+            dto=data,
+            listMessages=["Estadísticas de trámites obtenidas correctamente"]
+        ))

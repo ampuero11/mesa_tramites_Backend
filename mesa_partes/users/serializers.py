@@ -10,6 +10,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "email"]
         read_only_fields = ["id"]
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = "email"
 
@@ -32,5 +33,4 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             },
             listMessages=["Login exitoso"]
         )
-
         return response_data

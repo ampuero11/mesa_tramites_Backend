@@ -5,7 +5,8 @@ from users.serializers import AdminUserSerializer
 from files.models import File
 from mesa_partes.utils.response import custom_response
 from django.utils import timezone
-
+import re
+from django.utils import timezone
 class RequestFileSerializer(serializers.ModelSerializer):
     file = FileSerializer(read_only=True)
 
@@ -43,13 +44,17 @@ class RequestCreateSerializer(serializers.ModelSerializer):
         model = Request
         fields = ["full_name", "document", "email", "phone", "concept", "uploaded_files"]
 
-    from django.utils import timezone
-
     def create(self, validated_data):
         files_data = validated_data.pop("uploaded_files", [])
 
         last_request = Request.objects.order_by("-created_at").first()
-        next_number = (last_request.code_number + 1) if last_request else 1
+
+        if last_request:
+            match = re.search(r"(\d+)$", last_request.code)
+            last_number = int(match.group(1)) if match else 0
+            next_number = last_number + 1
+        else:
+            next_number = 1
 
         validated_data["code"] = f"TRM-{timezone.now().year}-{next_number:04d}"
 
@@ -65,3 +70,27 @@ class RequestCreateSerializer(serializers.ModelSerializer):
             RequestFile.objects.create(request=request_instance, file=file_instance)
 
         return request_instance
+    
+class PublicRequestStatusSerializer(serializers.ModelSerializer):
+    changed_by = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RequestStatus
+        fields = ["id", "status", "changed_at", "changed_by"]
+
+    def get_changed_by(self, obj):
+        if obj.changed_by:
+            return {
+                "id": obj.changed_by.id,
+                "name": obj.changed_by.name,
+                "email": obj.changed_by.email,
+            }
+        return None
+
+class PublicRequestSerializer(serializers.ModelSerializer):
+    files = RequestFileSerializer(many=True, read_only=True)
+    status_history = PublicRequestStatusSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Request
+        fields = ["id", "code", "full_name", "document", "email", "phone", "concept", "status", "created_at", "files", "status_history"]
