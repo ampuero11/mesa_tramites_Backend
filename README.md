@@ -25,7 +25,7 @@ python3 -m venv env
 ```
 
 ```bash
-./venv/Scripts/activate  # On Linux use:  source venv/bin/activate     
+./env/Scripts/activate  # On Linux use:  source venv/bin/activate     
 ```
 
 Instalar los paquetes
@@ -75,3 +75,4 @@ python3 manage.py createsuperuser
 ```
 
 y seguir los pasos, no olvidar estar en al carpeta mesa_partes cuando usamos comandos con manage.py
+
