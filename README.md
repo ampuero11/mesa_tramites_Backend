@@ -68,4 +68,10 @@ Levantar servidor
 python3 manage.py runserver
 ```
 
+Si necesitas crear un usuario para el administrador, sigue los siguientes pasos
 
+```bash
+python3 manage.py createsuperuser
+```
+
+y seguir los pasos, no olvidar estar en al carpeta mesa_partes cuando usamos comandos con manage.py
